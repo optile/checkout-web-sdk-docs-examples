@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Success</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        }
+        .message {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .start-again-btn {
+            font-size: 18px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="message">Payment was successful</div>
+<button id="start-again" class="start-again-btn">Start again</button>
+</body>
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("start-again").addEventListener("click", (event) => {
+            event.preventDefault();
+            const params = new URLSearchParams(window.location.search);
+            if(params.has("redirect")) {
+                window.location.href=params.get("redirect");
+            }
+        });
+    });
+</script>
+</html>

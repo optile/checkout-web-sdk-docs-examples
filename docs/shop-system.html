@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Methods Demo</title>
+    <style>
+        .payment-methods {
+            max-width: 750px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+
+        .payment-method {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .payment-method img {
+            height: 25px; /* Smaller logo size */
+        }
+
+        .payment-container, .other-button {
+            margin-top: 10px;
+        }
+
+        .other-button {
+            background-color: #0c73d4;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+        }
+
+        .label {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="payment-methods">
+    <div class="payment-method" id="cards-method">
+        <span class="label">Cards</span>
+        <img class="icon" src="https://resources.pi-nightly.integration.oscato.com/resource/network/DEMO_SHOP/en/VISA/logo2x.png" alt="Visa">
+        <img class="icon" src="https://resources.pi-nightly.integration.oscato.com/resource/network/DEMO_SHOP/en/MASTERCARD/logo2x.png" alt="MasterCard">
+        <img class="icon" src="https://resources.pi-nightly.integration.oscato.com/resource/network/DEMO_SHOP/en/AMEX/logo2x.png" alt="Amex">
+        <img class="icon" src="https://resources.pi-nightly.integration.oscato.com/resource/network/DEMO_SHOP/en/JCB/logo2x.png" alt="JCB">
+    </div>
+    <div class="payment-container" style="display: none;" id="payment-container"></div>
+
+    <div class="payment-method" id="other-method">
+        <span class="label">Another method</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-app-indicator" viewBox="0 0 16 16">
+            <path d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1z"/>
+            <path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+        </svg>
+    </div>
+    <div class="other-button" style="display: none;" id="other-button"><b>Pay</b></div>
+</div>
+<script src="https://resources.pi-nightly.integration.oscato.com/web/libraries/checkout-web/umd/checkout-web.min.js"></script>
+<script src="utils.js"></script>
+<script>
+    async function initializeCheckout() {
+        const list = await generateList("shop-system.html");
+        const longId = list.identification.longId;
+        
+        const configs = {
+            env: "pi-nightly.integration", // Use "test" or "live" for merchants
+            longId: longId
+        };
+        
+        try {
+            const checkout = await Payoneer.CheckoutWeb(configs);
+            const container = document.getElementById("payment-container");
+            checkout.dropIn("cards", {}).mount(container);
+        } catch (error) {
+            console.error("Error initializing Checkout Web SDK:", error);
+        }
+    }
+
+    document.getElementById("cards-method").addEventListener("click", function() {
+        const paymentContainer = document.getElementById("payment-container");
+        const otherButton = document.getElementById("other-button");
+        paymentContainer.style.display = paymentContainer.style.display === 'none' ? 'block' : 'none';
+        const icons = document.querySelectorAll(".icon").forEach(icon => icon.style = paymentContainer.style.display === 'none' ? "visibility: visible;" : "visibility: hidden;");
+        otherButton.style.display = 'none';
+    });
+
+    document.getElementById("other-method").addEventListener("click", function() {
+        const paymentContainer = document.getElementById("payment-container");
+        const icons = document.querySelectorAll(".icon").forEach(icon => icon.style = "visibility: visible;");
+        const otherButton = document.getElementById("other-button");
+        otherButton.style.display = otherButton.style.display === 'none' ? 'block' : 'none';
+        paymentContainer.style.display = 'none';
+    });
+
+    // Call the function to set up the checkout process
+    initializeCheckout();
+</script>
+</body>
+</html>

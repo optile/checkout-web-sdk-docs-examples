@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Cards Component</title>
+    <style>
+        #payment-container {
+            max-width: 750px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="payment-container"></div>
+
+<script src="https://resources.pi-nightly.integration.oscato.com/web/libraries/checkout-web/umd/checkout-web.min.js"></script>
+<script src="utils.js"></script>
+<script>
+    async function initializeCheckout() {
+        
+        const list = await generateList("cards.html");
+        const longId = list.identification.longId;
+        
+        const configs = {
+            env: "pi-nightly.integration", // Use "test" or "live" for merchants
+            longId: longId
+            // Add other optional configuration options as needed
+        };
+
+        // Initialize the Checkout Web SDK
+        try {
+            const checkout = await Payoneer.CheckoutWeb(configs);
+
+            // Mount the cards component to the specified container
+            const container = document.getElementById("payment-container");
+            const cards = checkout.dropIn("cards", {
+                // Optional configuration options
+            }).mount(container);
+        } catch (error) {
+            console.error("Error initializing Checkout Web SDK:", error);
+            // Handle initialization errors here
+        }
+    }
+
+    // Call the function to initialize the checkout process
+    initializeCheckout();
+</script>
+</body>
+</html>
